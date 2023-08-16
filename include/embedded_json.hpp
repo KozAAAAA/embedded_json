@@ -140,7 +140,7 @@ inline std::string_view Json<U>::convert_to_chars(float value){
 }
 
 template<std::size_t U>
-inline std::string_view Json<U>::convert_to_chars(uint32_t value){
+inline std::string_view Json<U>::convert_to_chars(int value){
   (void)value;
   return "int";
 }
