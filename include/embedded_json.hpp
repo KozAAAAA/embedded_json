@@ -27,11 +27,7 @@ class Json {
   void add(const std::string_view key, const T value) {
     // "key": value,
     append_key_prefix(key);
-
-    (void)value;
-    std::string_view s_value = "value";  // TODO: Convert value to s_value
-    
-    append_string(s_value);
+    append_string(convert_to_chars(value));
   }
 
   template <typename T, std::size_t S>
@@ -46,11 +42,7 @@ class Json {
       } else {
         append_char(',');
       }
-
-      (void)v;
-      std::string_view s_value = "value";  // TODO: Convert v to s_value
-
-      append_string(s_value);
+      append_string(convert_to_chars(v));
     }
     append_char(']');
   }
@@ -75,7 +67,7 @@ class Json {
     }
   }
 
-  inline void append_key_prefix(const std::string_view key) {
+  void append_key_prefix(const std::string_view key) {
     if (json_empty) {
       json_empty = false;
     } else {
@@ -85,6 +77,12 @@ class Json {
     append_string(key);
     append_char('"');
     append_char(':');
+  }
+
+  template <typename T>
+  std::string_view convert_to_chars(T value) {
+    (void)value;
+    return "val";
   }
 };
 
