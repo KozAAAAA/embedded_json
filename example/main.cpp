@@ -4,7 +4,7 @@
 
 int main() {
     embeddedjson::Json<2000> json;
-    json.add("key1", 12);
+    json.add("key1", 12.0f);
     json.add("key2", 23);
 
     auto [array, size] = json.get_as_c_array();
@@ -14,7 +14,7 @@ int main() {
 
     json.clear();
 
-    json.add("dddd", 23);
+    json.add("dddd", true);
     json.add("daswe", 23);
 
     std::array<int, 5> arr = {1, 2, 3, 4, 5};
