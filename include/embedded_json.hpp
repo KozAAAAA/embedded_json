@@ -31,7 +31,7 @@ class Json {
   bool json_empty;
 
   inline void append_char(const char c);
-  inline void append_string(const std::string_view str);
+  inline void append_string(const std::string_view str); // TODO: Optimise (use func push_back array)
   inline void append_key_prefix(const std::string_view key);
 
   inline std::string_view convert_to_chars(const float value);
