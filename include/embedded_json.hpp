@@ -48,6 +48,7 @@ class Json<U>::static_vector {
   inline constexpr static_vector& operator=(const static_vector&) = delete;
   inline ~static_vector() {}
 
+  // TODO: Add append array instead of push_back in for loop
   inline void push_back(const T val);
   inline void reset();
   inline const T* data();
