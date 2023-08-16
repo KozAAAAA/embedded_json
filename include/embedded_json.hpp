@@ -1,10 +1,8 @@
-
-
-// #pragma once
+#pragma once
 
 #include <array>
 #include <stdexcept>
-#include <string>
+#include <string_view>
 #include <utility>
 
 namespace embeddedjson {
@@ -12,102 +10,166 @@ namespace embeddedjson {
 template <std::size_t U>
 class Json {
  public:
-  Json() : json_empty{true} { append_char('{'); }
-  Json(const Json&) = delete;
-  Json& operator=(const Json&) = delete;
-  ~Json() {}
+  inline constexpr Json();
+  inline constexpr Json(const Json&) = delete;
+  inline constexpr Json& operator=(const Json&) = delete;
+  inline ~Json();
 
-  void clear() {
-    json_empty = true;
-    json_str.reset();
-    append_char('{');
-  }
-
+  inline void clear();
   template <typename T>
-  void add(const std::string_view key, const T value) {
-    // "key": value,
-    append_key_prefix(key);
-    append_string(convert_to_chars(value));
-  }
-
+  inline void add(const std::string_view key, const T value);
   template <typename T, std::size_t S>
-  void add(const std::string_view key, const std::array<T, S>& values) {
-    // "key":[value1, value2, value3]
-    bool array_empty = true;
-    append_key_prefix(key);
-    append_char('[');
-    for (auto v : values) {
-      if (array_empty) {
-        array_empty = false;
-      } else {
-        append_char(',');
-      }
-      append_string(convert_to_chars(v));
-    }
-    append_char(']');
-  }
-
-  std::pair<const char*, std::size_t> get_as_c_array() {
-    append_char('}');
-    return std::make_pair(json_str.data(), json_str.size());
-  }
+  inline void add(const std::string_view key, const std::array<T, S>& values);
+  std::pair<const char*, std::size_t> get_as_c_array();
 
  private:
   template <typename T, std::size_t S>
   class static_vector;
-
   static_vector<char, U> json_str;
   bool json_empty;
 
-  inline void append_char(const char c) { json_str.push_back(c); }
-
-  inline void append_string(const std::string_view str) {
-    for (auto c : str) {
-      append_char(c);
-    }
-  }
-
-  void append_key_prefix(const std::string_view key) {
-    if (json_empty) {
-      json_empty = false;
-    } else {
-      append_char(',');
-    }
-    append_char('"');
-    append_string(key);
-    append_char('"');
-    append_char(':');
-  }
+  inline void append_char(const char c);
+  inline void append_string(const std::string_view str);
+  inline void append_key_prefix(const std::string_view key);
 
   template <typename T>
-  std::string_view convert_to_chars(T value) {
-    (void)value;
-    return "val";
-  }
+  inline std::string_view convert_to_chars(T value);
 };
 
 template <std::size_t U>
 template <typename T, std::size_t S>
 class Json<U>::static_vector {
  public:
-  static_vector() : write_index{0} {}
-  static_vector(const static_vector&) = delete;
-  static_vector& operator=(const static_vector&) = delete;
-  ~static_vector() {}
-  void push_back(const T val) {
-    if (write_index > (S - 1)) {
-      throw std::overflow_error("Not enough space allocated");
-    }
-    buffer[write_index] = val;
-    write_index++;
-  }
-  void reset() { write_index = 0; }
-  const T* data() { return buffer.data(); }
-  std::size_t size() { return write_index; }
+  inline constexpr static_vector() : write_index{0} {}
+  inline constexpr static_vector(const static_vector&) = delete;
+  inline constexpr static_vector& operator=(const static_vector&) = delete;
+  inline ~static_vector() {}
+
+  inline void push_back(const T val);
+  inline void reset();
+  inline const T* data();
+  inline std::size_t size();
 
  private:
   std::size_t write_index;
   inline static std::array<T, S> buffer{0};
 };
+
+}  // namespace embeddedjson
+
+// Json
+namespace embeddedjson {
+
+template <std::size_t U>
+inline constexpr Json<U>::Json() : json_empty{true} {
+  append_char('{');
+}
+
+template <std::size_t U>
+inline Json<U>::~Json() {}
+
+template <std::size_t U>
+inline void Json<U>::clear() {
+  json_empty = true;
+  json_str.reset();
+  append_char('{');
+}
+
+template <std::size_t U>
+template <typename T>
+inline void Json<U>::add(const std::string_view key, const T value) {
+  // "key": value,
+  append_key_prefix(key);
+  append_string(convert_to_chars(value));
+}
+
+template <std::size_t U>
+template <typename T, std::size_t S>
+inline void Json<U>::add(const std::string_view key, const std::array<T, S>& values) {
+  // "key":[value1, value2, value3]
+  bool array_empty = true;
+  append_key_prefix(key);
+  append_char('[');
+  for (auto v : values) {
+    if (array_empty) {
+      array_empty = false;
+    } else {
+      append_char(',');
+    }
+    append_string(convert_to_chars(v));
+  }
+  append_char(']');
+}
+
+template <std::size_t U>
+inline std::pair<const char*, std::size_t> Json<U>::get_as_c_array() {
+  append_char('}');
+  return std::make_pair(json_str.data(), json_str.size());
+}
+
+template <std::size_t U>
+inline void Json<U>::append_char(const char c) {
+  json_str.push_back(c);
+}
+
+template <std::size_t U>
+inline void Json<U>::append_string(const std::string_view str) {
+  for (auto c : str) {
+    append_char(c);
+  }
+}
+
+template <std::size_t U>
+inline void Json<U>::append_key_prefix(const std::string_view key) {
+  if (json_empty) {
+    json_empty = false;
+  } else {
+    append_char(',');
+  }
+  append_char('"');
+  append_string(key);
+  append_char('"');
+  append_char(':');
+}
+
+template<std::size_t U>
+template <typename T>
+inline std::string_view Json<U>::convert_to_chars(T value){
+  (void)value;
+  return "val";
+}
+
+}  // namespace embeddedjson
+
+// Json::static_vector
+namespace embeddedjson {
+
+template <std::size_t U>
+template <typename T, std::size_t S>
+inline void Json<U>::static_vector<T, S>::push_back(const T val) {
+  if (write_index > (S - 1)) {
+    throw std::overflow_error("Not enough space allocated");
+  }
+  buffer[write_index] = val;
+  write_index++;
+}
+
+template <std::size_t U>
+template <typename T, std::size_t S>
+inline void Json<U>::static_vector<T, S>::reset() {
+  write_index = 0;
+}
+
+template <std::size_t U>
+template <typename T, std::size_t S>
+inline const T* Json<U>::static_vector<T, S>::data() {
+  return buffer.data();
+}
+
+template <std::size_t U>
+template <typename T, std::size_t S>
+inline std::size_t Json<U>::static_vector<T, S>::size() {
+  return write_index;
+}
 
 }  // namespace embeddedjson
