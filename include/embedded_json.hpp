@@ -1,7 +1,9 @@
 #pragma once
 
 #include <array>
+#include <charconv>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -32,9 +34,9 @@ class Json {
   inline void append_string(const std::string_view str);
   inline void append_key_prefix(const std::string_view key);
 
-  inline std::string_view convert_to_chars(float value);
-  inline std::string_view convert_to_chars(int value);
-  inline std::string_view convert_to_chars(bool value);
+  inline std::string_view convert_to_chars(const float value);
+  inline std::string_view convert_to_chars(const int value);
+  inline std::string_view convert_to_chars(const bool value);
 };
 
 template <std::size_t U>
@@ -133,22 +135,24 @@ inline void Json<U>::append_key_prefix(const std::string_view key) {
   append_char(':');
 }
 
+//TODO: Check for errors
 template<std::size_t U>
-inline std::string_view Json<U>::convert_to_chars(float value){
-  (void)value;
-  return "float";
+inline std::string_view Json<U>::convert_to_chars(const float value){
+  std::array<char, 20> str; // TODO: Write directly to the buffer inside static_vector
+  auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), value,std::chars_format::fixed, 2);
+  return std::string_view{str.data(), ptr};
 }
 
 template<std::size_t U>
-inline std::string_view Json<U>::convert_to_chars(int value){
-  (void)value;
-  return "int";
+inline std::string_view Json<U>::convert_to_chars(const int value){
+  std::array<char, 20> str; // TODO: Write directly to the buffer inside static_vector
+  auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), value);
+  return std::string_view{str.data(), ptr};
 }
 
 template<std::size_t U>
-inline std::string_view Json<U>::convert_to_chars(bool value){
-  (void)value;
-  return "bool";
+inline std::string_view Json<U>::convert_to_chars(const bool value){
+  return value == true ? "true" : "false";
 }
 
 }  // namespace embeddedjson
