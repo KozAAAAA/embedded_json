@@ -32,8 +32,9 @@ class Json {
   inline void append_string(const std::string_view str);
   inline void append_key_prefix(const std::string_view key);
 
-  template <typename T>
-  inline std::string_view convert_to_chars(T value);
+  inline std::string_view convert_to_chars(float value);
+  inline std::string_view convert_to_chars(int value);
+  inline std::string_view convert_to_chars(bool value);
 };
 
 template <std::size_t U>
@@ -133,10 +134,21 @@ inline void Json<U>::append_key_prefix(const std::string_view key) {
 }
 
 template<std::size_t U>
-template <typename T>
-inline std::string_view Json<U>::convert_to_chars(T value){
+inline std::string_view Json<U>::convert_to_chars(float value){
   (void)value;
-  return "val";
+  return "float";
+}
+
+template<std::size_t U>
+inline std::string_view Json<U>::convert_to_chars(uint32_t value){
+  (void)value;
+  return "int";
+}
+
+template<std::size_t U>
+inline std::string_view Json<U>::convert_to_chars(bool value){
+  (void)value;
+  return "bool";
 }
 
 }  // namespace embeddedjson
