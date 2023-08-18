@@ -108,6 +108,7 @@ inline void Json<U>::add(const std::string_view key, const std::array<T, S>& val
 template <std::size_t U>
 inline std::pair<const char*, std::size_t> Json<U>::get_as_c_array() {
   append_char('}');
+  append_char('\n');
   return std::make_pair(json_str.data(), json_str.size());
 }
 
