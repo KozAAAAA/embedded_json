@@ -139,14 +139,14 @@ inline void Json<U>::append_key_prefix(const std::string_view key) {
 //TODO: Check for errors
 template<std::size_t U>
 inline std::string_view Json<U>::convert_to_chars(const float value){
-  std::array<char, 20> str; // TODO: Write directly to the buffer inside static_vector
+  static std::array<char, 100> str; // TODO: Write directly to the buffer inside static_vector
   auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), value,std::chars_format::fixed, 2);
   return std::string_view{str.data(), ptr};
 }
 
 template<std::size_t U>
 inline std::string_view Json<U>::convert_to_chars(const int value){
-  std::array<char, 20> str; // TODO: Write directly to the buffer inside static_vector
+  static std::array<char, 100> str; // TODO: Write directly to the buffer inside static_vector
   auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), value);
   return std::string_view{str.data(), ptr};
 }
@@ -165,7 +165,7 @@ template <std::size_t U>
 template <typename T, std::size_t S>
 inline void Json<U>::static_vector<T, S>::push_back(const T val) {
   if (write_index > (S - 1)) {
-    throw std::overflow_error("Not enough space allocated");
+    return; // TODO: Return error code
   }
   buffer[write_index] = val;
   write_index++;
